@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "windowmover",
+  "version": "0.1.0",
+  "identifier": "com.tcs.windowmover",
+  "build": {
+    "beforeDevCommand": "pnpm start",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist/windowmover/browser"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Window Mover",
+        "fullscreen": false,
+        "resizable": true,
+        "width": 500,
+        "height": 500,
+        "minHeight": 400,
+        "minWidth": 400
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "withGlobalTauri": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/128x128.png",
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    }
+  }
+}

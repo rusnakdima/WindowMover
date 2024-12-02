@@ -1,0 +1,82 @@
+<ng-template #tileItem let-app="app">
+  <div class="flex flex-row justify-between items-center gap-x-2 p-5 rounded-xl styleBorderSolid border hover:bg-gray-400 dark:hover:bg-gray-700 w-full">
+    <div class="flex flex-row items-center gap-x-3 w-8/12">
+      @if (isFavorite(app)) {
+        <ion-icon class="cursor-pointer" name="star" (click)="setUnfavorite(app)" />
+      } @else {
+        <ion-icon class="cursor-pointer" name="star-outline" (click)="setFavorite(app)" />
+      }
+
+      <div class="flex flex-col gap-y-1 w-full">
+        <div class="flex flex-row gap-x-2">
+          <span class="font-semibold textMuted">Title:</span>
+          <span class="text-wrap">{{ app.title }}</span>
+        </div>
+        <div class="flex flex-row gap-x-2">
+          <span class="font-semibold textMuted">Exe path:</span>
+          <div class=" overflow-x-auto">
+            <span class="text-wrap">{{ app.exe_file }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-y-3">
+      <div class="flex flex-row items-center gap-x-2">
+        <input class="styleCheckbox cursor-pointer" type="checkbox" id="move" (change)="setIsMove(app, $event)">
+        <label class="styleLabel" for="move">Is Move</label>
+      </div>
+      <div class="flex flex-row items-center gap-x-2">
+        <input class="styleCheckbox cursor-pointer" type="checkbox" id="top" (change)="setIsOnTop(app, $event)">
+        <label class="styleLabel" for="top">Is On Top</label>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="flex flex-col gap-y-3 m-3">
+  @if (listFavorites.length > 0) {
+    <div class="flex flex-col gap-y-3">
+      <span class="font-bold text-2xl">Favorites Apps</span>
+
+      @for (favorite of listFavorites; track favorite) {
+        <ng-container [ngTemplateOutlet]="tileItem" [ngTemplateOutletContext]="{ app: favorite }"></ng-container>
+      }
+    </div>
+
+    <hr class="!rounded-none styleBorderSolidLite border" />
+  }
+
+  <span class="font-bold text-2xl">Actives Apps</span>
+
+  <div class="flex flex-row justify-between p-2 !rounded-none styleBorderSolidLite border-b">
+    <div class="styleFloatBut">
+      <button (click)="refresh()" id="refreshBut">
+        <ion-icon class="text-3xl" name="refresh-outline"></ion-icon>
+      </button>
+    </div>
+
+    <app-search
+      [tempArray]="tempListApps"
+      (array)="searchFunc($event)"
+    ></app-search>
+  </div>
+
+  <div class="flex flex-col gap-y-3">
+    @for (app of listApps; track app) {
+      <ng-container [ngTemplateOutlet]="tileItem" [ngTemplateOutletContext]="{ app: app }"></ng-container>
+    }
+
+    @if (listApps.length == 0) {
+      <div class="flex flex-col items-center w-full">
+        <div class="text-center w-2/3">
+          <span class="font-bold text-xl">No running programs found! (There may be problems in the system or in the program)</span>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<app-window-notify
+  [dataNotify]="dataNotify"
+></app-window-notify>
