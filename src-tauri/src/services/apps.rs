@@ -111,8 +111,8 @@ pub fn get_list_windows() -> Response {
 	}
 }
 
-pub fn start_move(temp_hwnd: Arc<Mutex<usize>>, temp_is_move: Arc<Mutex<bool>>) {
-	while *temp_is_move.lock().unwrap() {
+pub fn start_move(temp_hwnd: Arc<Mutex<usize>>) {
+	loop {
 		if unsafe { STOP_FLAG } {
 			break;
 		}
@@ -129,6 +129,10 @@ pub fn start_move(temp_hwnd: Arc<Mutex<usize>>, temp_is_move: Arc<Mutex<bool>>) 
 }
 
 pub fn start_action_on_app(list_active_apps: Vec<ActiveApp>) -> Response {
+	unsafe { STOP_FLAG = true; }
+	std::thread::sleep(Duration::from_secs(1));
+	unsafe { STOP_FLAG = false; }
+
 	for app in list_active_apps.iter() {
 		if app.hwnd != "" {
 			let temp_hwnd = app.hwnd.parse::<usize>().unwrap() as *mut HWND__;
@@ -136,17 +140,12 @@ pub fn start_action_on_app(list_active_apps: Vec<ActiveApp>) -> Response {
 			if !temp_hwnd.is_null() {
 				if unsafe { IsWindowVisible(temp_hwnd) != 0 } {
 					let arc_temp_hwnd = Arc::new(Mutex::new(temp_hwnd as usize));
-					let arc_temp_is_move = Arc::new(Mutex::new(app.isMove));
 
-					std::thread::spawn(move || {
-						if *arc_temp_is_move.lock().unwrap() {
-							start_move(arc_temp_hwnd, arc_temp_is_move);
-						} else {
-							unsafe { STOP_FLAG = true; }
-							std::thread::sleep(Duration::from_secs(1));
-							unsafe { STOP_FLAG = false; }
-						}
-					});
+					if app.isMove {
+						std::thread::spawn(move || {
+							start_move(arc_temp_hwnd);
+						});
+					}
 
 					if app.isOnTop {
 						unsafe {

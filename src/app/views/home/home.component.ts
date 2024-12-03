@@ -155,7 +155,6 @@ export class HomeComponent implements OnInit {
         isOnTop: false,
       });
     }
-    console.log(this.listActiveApps);
     this.startActionOnApp();
   }
 
@@ -176,8 +175,21 @@ export class HomeComponent implements OnInit {
         isOnTop: event.target.checked,
       });
     }
-    console.log(this.listActiveApps);
     this.startActionOnApp();
+  }
+
+  isMove(app_info: AppInfo): boolean {
+    return (
+      this.listActiveApps.find((app) => app.hwnd === app_info.hwnd)?.isMove ==
+      true
+    );
+  }
+
+  isOnTop(app_info: AppInfo): boolean {
+    return (
+      this.listActiveApps.find((app) => app.hwnd === app_info.hwnd)?.isOnTop ==
+      true
+    );
   }
 
   startActionOnApp() {
